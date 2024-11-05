@@ -3,18 +3,20 @@ from pydantic import BaseModel
 from typing import List
 import pandas as pd
 import joblib
+import os
 
-# Definir el esquema de entrada con listas
+# Definir el esquema de entrada con listas y el nombre del modelo
 class PredictionInput(BaseModel):
     store_nbr: List[int]
     item_nbr: List[int]
     months: List[int]
     years: List[int]
+    model_name: str  # Nombre del modelo proporcionado por el front-end
 
 # Inicializar FastAPI
 app = FastAPI()
 
-# Cargar el modelo (función de ejemplo)
+# Cargar el modelo (función general para todos los modelos)
 def load_model(filename):
     model = joblib.load(filename)
     return model
@@ -27,9 +29,16 @@ def predict(input_data: PredictionInput):
         names=['store_nbr', 'item_nbr', 'month_name', 'year']
     ).to_frame(index=False)
 
+    # Crear la ruta del archivo para el modelo
+    model_filename = f"./models/{input_data.model_name}.pkl"
+    
+    # Verificar si el archivo del modelo existe
+    if not os.path.isfile(model_filename):
+        raise HTTPException(status_code=404, detail="Modelo no encontrado")
+
     try:
-        # Cargar el modelo (puedes cambiar por el modelo que estés utilizando)
-        model = load_model("./models/decision_tree_model.pkl")
+        # Cargar el modelo especificado por el front-end
+        model = load_model(model_filename)
 
         # Hacer predicciones
         predictions = model.predict(combinations)
