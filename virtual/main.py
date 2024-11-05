@@ -21,6 +21,16 @@ def load_model(filename):
     model = joblib.load(filename)
     return model
 
+@app.get('/')
+def hello_world():
+    return "Hello,World"
+
+
+if __name__ == '__main__':
+    import uvicorn
+    uvicorn.run(app)
+
+
 @app.post("/predict/")
 def predict(input_data: PredictionInput):
     # Crear todas las combinaciones posibles de tienda, producto, mes y año
