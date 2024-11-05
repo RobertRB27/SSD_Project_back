@@ -11,7 +11,7 @@ class PredictionInput(BaseModel):
     item_nbr: List[int]
     months: List[int]
     years: List[int]
-    model_name: str  # Nombre del modelo proporcionado por el front-end
+    forecast_model: str  # Nombre del modelo proporcionado por el front-end
 
 # Inicializar FastAPI
 app = FastAPI()
@@ -40,7 +40,7 @@ def predict(input_data: PredictionInput):
     ).to_frame(index=False)
 
     # Crear la ruta del archivo para el modelo
-    model_filename = f"./models/{input_data.model_name}.pkl"
+    model_filename = f"./models/{input_data.forecast_model}.pkl"
     
     # Verificar si el archivo del modelo existe
     if not os.path.isfile(model_filename):
